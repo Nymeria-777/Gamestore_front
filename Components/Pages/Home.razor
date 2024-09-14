@@ -1,7 +1,57 @@
 ﻿@page "/"
+@using Models
+<PageTitle>Game Catalog</PageTitle>
+<table>
+    <thead>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Genre</th>
+        <th>Price</th>
+        <th>Release Date</th>
+        <th></th>
+    </thead>
+    <tbody>
+        @foreach(var game in games){
+        <tr>
+            <td>@game.Id</td>
+            <td>@game.Name</td>
+            <td>@game.Genre</td>
+            <td>@game.Price</td>
+            <td>@game.ReleaseDate</td>
+            <td></td>
+        </tr>
+        }
+    </tbody>
+</table>
 
-<PageTitle>Home</PageTitle>
+@code{
+    private GameSummary[] games=
+    [
+         new(){
+            Id=1,
+            Name="Street Fighter",
+            Genre="Fighting",
+            Price= 19.9M,
+            ReleaseDate =new DateOnly(1992, 7, 15)
 
-<h1>Hello, world!</h1>
+        },
+         new(){
+             Id=2,
+            Name="Final Fantasy ii",
+            Genre="Roleplaying",
+            Price= 29.9M,
+            ReleaseDate =new DateOnly(2001, 7, 15)   
 
-Welcome to your new app.
+        },
+         new(){
+            Id=3,
+            Name="Fifa",
+            Genre="Sports",
+            Price= 45.9M,
+            ReleaseDate =new DateOnly(2016, 7, 15)    
+
+        }
+         
+
+    ];
+}
