@@ -1,11 +1,12 @@
 ﻿@page "/editgame"
+@page "/editgame/{id:int}"
 @inject NavigationManager NavigationManager
 @inject GamesClient GamesClient
 @inject GenresClient GenresClient
 
-<PageTitle>New Game</PageTitle>
-<h3>New GamE</h3>
-@if( genres is null)
+<PageTitle>@title</PageTitle>
+<h3>@title</h3>
+@if( genres is null || game is null)
 {
 <p>Loading...</p>
 }
@@ -44,30 +45,64 @@ else{
 
             </div>
             <button type="submit" class="btn btn-primary">submit</button>
-            <button role="button" class="btn btn-secondary" href="/">Cancel</button>
+            <a role="button" class="btn btn-secondary" href="/" >Cancel</a>
             </EditForm>
         </div>
     </div>   
 }
 
 @code {
+    [Parameter]
+    public int? Id{get; set;}
     [SupplyParameterFromForm]
-    private GameDetails game {get; set;}= new()
-    {
-        Name =string.Empty,
-        ReleaseDate = DateOnly.FromDateTime(DateTime.UtcNow)
-
-    };
+    private GameDetails? game {get; set;}
     
 
     private Genre[]? genres;
+
+    private string title =string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        if (game is not null)
+        {
+            return;
+        }
+       if (Id is not null)
+       {
+        game = GamesClient.GetGame(Id.Value);
+        title = $"Edit  {game.Name}";
+       }
+       else
+       {
+            game= new()
+            {
+                Name =string.Empty,
+                ReleaseDate = DateOnly.FromDateTime(DateTime.UtcNow)
+            };
+            title ="New Game";
+       }
+    }
+    
+
     protected override void OnInitialized()
     {
         genres= GenresClient.GetGeneres();
     }
     private void HandleSubmit()
     {
-        GamesClient.AddGame(game);
+        ArgumentNullException.ThrowIfNull(game);
+
+        if (Id is null)
+        {
+            GamesClient.AddGame(game);
+        }
+        else{
+            game.Id =Id.Value;
+            GamesClient.UpdateGame(game);
+        }
+
+        
         NavigationManager.NavigateTo("/");
     }
 }
